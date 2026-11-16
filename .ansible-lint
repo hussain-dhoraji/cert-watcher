@@ -1,0 +1,7 @@
+exclude_paths:
+  - .github/
+  - build/
+  - deploy/
+  - helm/
+  - src/
+  - terraform/
