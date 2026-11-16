@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-watcher
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Hussain-MD/cert-watcher.git
+    targetRevision: main
+    path: helm/cert-watcher
+    helm:
+      valuesObject:
+        config:
+          endpoints:
+            - github.com:443
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-watcher
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

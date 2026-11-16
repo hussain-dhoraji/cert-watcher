@@ -1,0 +1,6 @@
+---
+- name: Restart cert-watcher
+  ansible.builtin.systemd_service:
+    name: cert-watcher
+    state: restarted
+    daemon_reload: true

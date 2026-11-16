@@ -1,0 +1,17 @@
+---
+# Path on the Ansible controller to the jar built by `gradle bootJar`.
+cert_watcher_jar_src: "{{ playbook_dir }}/../build/libs/cert-watcher-0.1.0.jar"
+cert_watcher_java_package: java-17-openjdk-headless
+cert_watcher_user: cert-watcher
+cert_watcher_install_dir: /opt/cert-watcher
+cert_watcher_config_dir: /etc/cert-watcher
+cert_watcher_port: 8080
+
+cert_watcher_check_interval: PT1H
+cert_watcher_warning_days: 30
+cert_watcher_critical_days: 7
+cert_watcher_endpoints: []
+# PEM files must be readable by the cert_watcher_user group.
+cert_watcher_certificate_files: []
+# Store real webhook URLs with Ansible Vault.
+cert_watcher_webhook_url: ""

@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: cert-watcher
+
+server:
+  port: 8080
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+cert-watcher:
+  check-interval: PT1H
+  warning-days: 30
+  critical-days: 7
+  endpoints: []
+  certificate-files: []

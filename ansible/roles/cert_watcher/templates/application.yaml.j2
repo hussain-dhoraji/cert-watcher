@@ -1,0 +1,13 @@
+# Managed by Ansible
+server:
+  port: {{ cert_watcher_port }}
+
+cert-watcher:
+  check-interval: {{ cert_watcher_check_interval }}
+  warning-days: {{ cert_watcher_warning_days }}
+  critical-days: {{ cert_watcher_critical_days }}
+  endpoints: {{ cert_watcher_endpoints | to_json }}
+  certificate-files: {{ cert_watcher_certificate_files | to_json }}
+{% if cert_watcher_webhook_url %}
+  webhook-url: {{ cert_watcher_webhook_url | to_json }}
+{% endif %}

@@ -1,0 +1,18 @@
+# Managed by Ansible
+[Unit]
+Description=TLS certificate expiry watcher
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User={{ cert_watcher_user }}
+Group={{ cert_watcher_user }}
+ExecStart=/usr/bin/java -XX:MaxRAMPercentage=75 -jar {{ cert_watcher_install_dir }}/cert-watcher.jar --spring.config.additional-location=file:{{ cert_watcher_config_dir }}/
+Restart=on-failure
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

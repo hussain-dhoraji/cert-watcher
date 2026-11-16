@@ -1,0 +1,63 @@
+---
+- name: Install Java runtime
+  ansible.builtin.package:
+    name: "{{ cert_watcher_java_package }}"
+    state: present
+
+- name: Create service group
+  ansible.builtin.group:
+    name: "{{ cert_watcher_user }}"
+    system: true
+
+- name: Create service user
+  ansible.builtin.user:
+    name: "{{ cert_watcher_user }}"
+    group: "{{ cert_watcher_user }}"
+    system: true
+    shell: /sbin/nologin
+    create_home: false
+
+- name: Create install and config directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: "{{ cert_watcher_user }}"
+    mode: "0750"
+  loop:
+    - "{{ cert_watcher_install_dir }}"
+    - "{{ cert_watcher_config_dir }}"
+
+- name: Copy application jar
+  ansible.builtin.copy:
+    src: "{{ cert_watcher_jar_src }}"
+    dest: "{{ cert_watcher_install_dir }}/cert-watcher.jar"
+    owner: root
+    group: "{{ cert_watcher_user }}"
+    mode: "0640"
+  notify: Restart cert-watcher
+
+- name: Render application configuration
+  ansible.builtin.template:
+    src: application.yaml.j2
+    dest: "{{ cert_watcher_config_dir }}/application.yaml"
+    owner: root
+    group: "{{ cert_watcher_user }}"
+    mode: "0640"
+  notify: Restart cert-watcher
+
+- name: Install systemd unit
+  ansible.builtin.template:
+    src: cert-watcher.service.j2
+    dest: /etc/systemd/system/cert-watcher.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart cert-watcher
+
+- name: Enable and start cert-watcher
+  ansible.builtin.systemd_service:
+    name: cert-watcher
+    enabled: true
+    state: started
+    daemon_reload: true

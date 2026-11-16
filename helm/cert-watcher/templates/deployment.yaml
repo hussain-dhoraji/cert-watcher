@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cert-watcher.fullname" . }}
+  labels:
+    {{- include "cert-watcher.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "cert-watcher.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "cert-watcher.selectorLabels" . | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: /actuator/prometheus
+    spec:
+      serviceAccountName: {{ include "cert-watcher.fullname" . }}
+      automountServiceAccountToken: false
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: cert-watcher
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+              value: file:/etc/cert-watcher/config/
+            {{- if or .Values.webhook.url .Values.webhook.existingSecret }}
+            - name: CERT_WATCHER_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "cert-watcher.webhookSecretName" . }}
+                  key: url
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 8080
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            periodSeconds: 3
+            failureThreshold: 40
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/cert-watcher/config
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+            {{- range .Values.certificateSecrets }}
+            - name: secret-{{ . }}
+              mountPath: /etc/cert-watcher/secrets/{{ . }}
+              readOnly: true
+            {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "cert-watcher.fullname" . }}
+        - name: tmp
+          emptyDir: {}
+        {{- range .Values.certificateSecrets }}
+        - name: secret-{{ . }}
+          secret:
+            secretName: {{ . }}
+            items:
+              - key: tls.crt
+                path: tls.crt
+        {{- end }}

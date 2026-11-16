@@ -1,0 +1,56 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/hussain-md/cert-watcher
+  # CI publishes "latest" and "sha-<commit>" tags; pin a sha tag for anything beyond a demo.
+  tag: latest
+  pullPolicy: Always
+
+nameOverride: ""
+fullnameOverride: ""
+
+config:
+  # ISO-8601 duration between check runs.
+  checkInterval: PT1H
+  warningDays: 30
+  criticalDays: 7
+  # TLS endpoints to check, as host or host:port.
+  endpoints: []
+  #  - example.com:443
+
+# Names of kubernetes.io/tls Secrets in the release namespace to watch.
+# Only the public tls.crt key is mounted; private keys never enter the pod.
+certificateSecrets: []
+#  - my-ingress-tls
+
+webhook:
+  # Slack/Teams incoming-webhook URL. Setting it creates a Secret; prefer existingSecret in real clusters.
+  url: ""
+  # Existing Secret holding the webhook URL under the key "url".
+  existingSecret: ""
+
+service:
+  type: ClusterIP
+  port: 8080
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 256Mi
+  limits:
+    memory: 512Mi
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+  fsGroup: 10001
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL

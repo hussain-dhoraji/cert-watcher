@@ -1,0 +1,6 @@
+---
+- name: Install cert-watcher
+  hosts: cert_watcher
+  become: true
+  roles:
+    - role: cert_watcher

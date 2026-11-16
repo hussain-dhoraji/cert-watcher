@@ -1,0 +1,10 @@
+apiVersion: v2
+name: cert-watcher
+description: Watches TLS certificates on endpoints and in Kubernetes Secrets and alerts before they expire
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - tls
+  - certificates
+  - monitoring

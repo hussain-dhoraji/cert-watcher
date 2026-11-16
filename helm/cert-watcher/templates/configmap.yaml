@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "cert-watcher.fullname" . }}
+  labels:
+    {{- include "cert-watcher.labels" . | nindent 4 }}
+data:
+  application.yaml: |
+    cert-watcher:
+      check-interval: {{ .Values.config.checkInterval }}
+      warning-days: {{ .Values.config.warningDays }}
+      critical-days: {{ .Values.config.criticalDays }}
+      endpoints:{{ if not .Values.config.endpoints }} []{{ end }}
+      {{- range .Values.config.endpoints }}
+        - {{ . | quote }}
+      {{- end }}
+      certificate-files:{{ if not .Values.certificateSecrets }} []{{ end }}
+      {{- range .Values.certificateSecrets }}
+        - /etc/cert-watcher/secrets/{{ . }}/tls.crt
+      {{- end }}

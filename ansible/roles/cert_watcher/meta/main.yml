@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  role_name: cert_watcher
+  namespace: hussainmd
+  author: Hussain Hussain
+  description: Install the cert-watcher service on RHEL-family hosts
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: EL
+      versions:
+        - "8"
+        - "9"
+dependencies: []
