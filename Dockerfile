@@ -4,7 +4,7 @@ COPY settings.gradle build.gradle ./
 COPY src ./src
 RUN gradle --no-daemon bootJar -x test
 
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:25-jre
 RUN groupadd --system --gid 10001 app \
     && useradd --system --uid 10001 --gid app --no-create-home --shell /usr/sbin/nologin app
 WORKDIR /app
