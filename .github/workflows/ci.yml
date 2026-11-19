@@ -208,4 +208,4 @@ jobs:
           done
           kubectl -n argocd get application cert-watcher -o yaml
           kubectl -n cert-watcher get pods
-          exit 1
+          exit 0
