@@ -7,6 +7,7 @@ plugins {
 
 group = 'io.github.hussainmd'
 version = '0.1.0'
+ext['tomcat.version'] = '10.1.58'
 
 java {
     toolchain {
