@@ -13,7 +13,7 @@ jobs:
     name: Build and test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -34,7 +34,7 @@ jobs:
     name: Lint Helm chart
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: azure/setup-helm@v4
       - name: Lint chart
         run: helm lint helm/cert-watcher
@@ -52,7 +52,7 @@ jobs:
       run:
         working-directory: ansible
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -68,7 +68,7 @@ jobs:
       run:
         working-directory: terraform/aws-eks
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: hashicorp/setup-terraform@v3
       - name: Check formatting
         run: terraform fmt -check -recursive -diff
@@ -85,7 +85,7 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build image
         run: docker build -t cert-watcher:ci .
       - name: Scan image with Trivy
@@ -112,7 +112,7 @@ jobs:
     needs: [build, helm]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: azure/setup-helm@v4
       - uses: helm/kind-action@v1
       - name: Build and load image into kind
@@ -153,7 +153,7 @@ jobs:
     needs: [build, helm]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: azure/setup-helm@v4
       - uses: helm/kind-action@v1
       - name: Build and load image into kind
